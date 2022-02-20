@@ -2,18 +2,20 @@ from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 
 class Config:
-    HOST = "185.143.221.91"
+    # Credentials
+    HOST = "ssh_ip"
+    USERNAME = "ssh_username"
+    KEY_LOCATION = r"key_path_location"
 
-    USERNAME = "den"
-    KEY_LOCATION = r"C:\Keys\500rubles"
+    # Backed up directories
+    BACKUP_DIRECTORIES = {r"local_path1": "remote_folder1",
+                          r"local_path2": "remote_folder2"}
 
-    BACKUP_DIRECTORIES = {r"C:\Shlack\kupyna": "kup"}
+    # Files and folders filtering
     EXCLUDED_NAMES = ["env", "venv", "."]
     EXCLUDED_FORMATS = ["pyc"]
 
-    HISTORY_FILE = "files.dump"
-
+    # Logging
     LOGGING_FILE = "sftp.log"
-
-    LOGGING_COMMAND_LINE_LEVEL = DEBUG
+    LOGGING_COMMAND_LINE_LEVEL = INFO
     LOGGING_FILE_LEVEL = INFO

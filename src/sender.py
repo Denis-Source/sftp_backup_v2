@@ -118,9 +118,48 @@ class Sender:
                             })
         self.logger.info(f"total client files found: {ClientFile.total}")
 
+    def sync_files(self):
+        """
+        Syncs files in specified folder in BACKUP_DIRECTORIES
+        Gets a list of files to send/remove/update
+        Sends required client files to a server files
+        Removes redundant server files if they are not in client directory
+        Updates outdated or recently changed files on server
+        :return:
+        """
 
-if __name__ == '__main__':
-    s = Sender()
-    s.get_client_files()
-    s.get_server_files()
-    # print(s.file_tracker.client_files)
+        #
+        files_to_remove = self.file_tracker.get_files_to_remove()
+        self.logger.info(f"total files to remove: {len(files_to_remove)}")
+        for file in files_to_remove:
+            self.connection.remove(file.remote_path)
+            self.logger.info(f"Removed remote file {file.remote_path}")
+
+        files_to_send = self.file_tracker.get_files_to_send()
+        self.logger.info(f"total files to send: {len(files_to_send)}")
+        for file in files_to_send:
+            try:
+                self.connection.listdir(file.remote_dir)
+                self.logger.info(f"folder {file.remote_dir} already exists")
+            except IOError:
+                self.connection.makedirs(file.remote_dir)
+                self.logger.info(f"created folder at {file.remote_dir}")
+            self.connection.put(file.full_path, file.remote_path, preserve_mtime=True)
+            self.logger.info(f"Sent local file {file.full_path} to {file.remote_path}")
+
+        file_to_update = self.file_tracker.get_files_to_update()
+        self.logger.info(f"total files to update: {len(file_to_update)}")
+        for file in file_to_update:
+            self.connection.put(file.full_path, file.remote_path, preserve_mtime=True)
+            self.logger.debug(f"Updated remote file {file.remote_path}")
+
+    def mainloop(self):
+        """
+        Main method
+        Scans local files then server files and syncs them
+        Sync is only one sided (from client to server)
+        :return:
+        """
+        self.get_client_files()
+        self.get_server_files()
+        self.sync_files()
