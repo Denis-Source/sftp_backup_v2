@@ -2,10 +2,19 @@ class FileTracker:
     def __init__(self):
         self.server_files = {}
         self.client_files = {}
+        self.server_folders = []
+
+    def add_server_folder(self, folder_path):
+        """
+        Adds the server folder to the list
+        :param folder_path:
+        :return:
+        """
+        self.server_folders.append(folder_path)
 
     def add_server_file(self, file):
         """
-        Adds the server file to a dictionary
+        Adds the server file to the dictionary
         :param file: str
         :return: None
         """
@@ -13,7 +22,7 @@ class FileTracker:
 
     def add_client_file(self, file):
         """
-        Adds the client file to a dictionary
+        Adds the client file to the dictionary
         :param file: str
         :return: None
         """
